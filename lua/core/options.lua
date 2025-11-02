@@ -1,0 +1,9 @@
+
+vim.g.mapleader = " "     -- Set leader to space (most common)
+
+-- Basic quality of life settings
+vim.opt.number = true
+vim.opt.mouse = "a"
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
+vim.opt.expandtab = true
