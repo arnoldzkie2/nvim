@@ -12,6 +12,7 @@ if not vim.loop.fs_stat(lazypath) then
     lazypath,
   })
 end
+
 vim.opt.rtp:prepend(lazypath)
 
 -- Plugin list
@@ -22,10 +23,7 @@ require("lazy").setup({
   -- Colorscheme
   {"catppuccin/nvim", name = "catppuccin", lazy = false, priority = 1000},
 
-  -- Essential plugins
-  "nvim-lua/plenary.nvim",
-  "tpope/vim-sleuth", -- Auto detect tab settings
-
+  -- Telescope
   {
     "nvim-telescope/telescope.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
@@ -33,5 +31,34 @@ require("lazy").setup({
       require("plugins.telescope")
     end
   },
+
+   -- File tree
+  {
+    "nvim-tree/nvim-tree.lua",
+    config = function()
+      require("plugins.nerdtree")
+    end
+  },
+
+
+  {
+    "nvim-treesitter/nvim-treesitter",
+    build = ":TSUpdate",
+    config = function()
+      require("plugins.treesitter")
+    end
+  },
+
+
+
+
+
+
+
+
+
+
+
+
 
 })

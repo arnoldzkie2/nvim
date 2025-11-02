@@ -1,6 +1,9 @@
 alias e = "nvim"
 alias c = "clear"
-alias dev = "pnpm run dev"
-alias start = "pnpm run start"
-alias build = "pnpm run build"
+alias dev = "npm run dev"
+alias pdev = "pnpm run dev"
+alias start = "npm run start"
+alias pstart = "pnpm run start"
+alias build = "npm run build"
+alias pbuild = "pnpm run build"
 
