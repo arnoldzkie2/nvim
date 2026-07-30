@@ -1,4 +1,5 @@
 {
+  "f": "xdg-open .",
   "calias": "cd ~/.config/nvim/alias",
   "e": "nvim",
   "c": "clear",
@@ -13,6 +14,7 @@
   "gg": "sudo systemctl start mysql && (cd /home/umm/projects/stylus && code .) && exit",
   "ie-res": "pnpm clear && pnpm i && pnpm build && pnpm dev",
   "ie": "cd /home/umm/projects/ie-t3 && code . && exit",
-  "petus": "ssh root@195.35.7.102"
+  "petus": "ssh root@195.35.7.102",
+  "vimconfig": "cd ~/.config/nvim"
 }
 
