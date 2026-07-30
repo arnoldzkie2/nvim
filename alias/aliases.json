@@ -16,6 +16,7 @@
   "ie": "cd /home/umm/projects/ie-t3 && code . && exit",
   "petus": "ssh root@195.35.7.102",
   "vimconfig": "cd ~/.config/nvim",
-  "pewpew": "source .venv/bin/activate"
+  "pewpew": "source .venv/bin/activate",
+  "pew": "deactivate"
 }
 
