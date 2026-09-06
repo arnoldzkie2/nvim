@@ -106,9 +106,9 @@ editor, opens a right split in Telescope, and cycles sessions in the terminal.
 | Ctrl+E | Normal, Insert | Find files with Telescope; completion cancellation can take priority in Insert mode |
 | Space, then `b` | Normal | Search open buffers with Telescope |
 | Ctrl+F | Normal, Insert | Toggle the file tree; completion documentation scrolling can take priority in Insert mode |
-| Ctrl+C | Normal, Insert | Copy the current line to a Neovim register and enter Insert mode |
+| Ctrl+C | Normal, Insert | Copy the current line to the system clipboard and enter Insert mode |
 | Ctrl+X | Normal, Insert | Cut the current line and enter Insert mode |
-| Ctrl+V | Normal, Insert | Paste from the Neovim register and enter Insert mode |
+| Ctrl+V | Normal, Insert | Paste from the system clipboard and enter Insert mode |
 | Ctrl+Z | Normal, Insert | Undo and enter Insert mode |
 | Ctrl+R | Normal, Insert, Visual | Delete the whole word under the cursor (Visual selection ends first) |
 | Alt+F | Normal, Insert, Visual | Format current file or selected range |
@@ -120,7 +120,12 @@ editor, opens a right split in Telescope, and cycles sessions in the terminal.
 
 Ctrl+W replaces Neovim's usual window-command prefix. To create splits without
 Telescope, use `:vsplit` (side by side) or `:split` (above/below).
-Copy/paste bindings currently use Neovim registers, not the system clipboard.
+Copy, cut, and paste use the system clipboard (`unnamedplus`), including Visual
+mode `c`, Ctrl+C, and normal yanks. Linux needs a clipboard provider such as
+`xclip` (installed by `setup.sh`). To copy terminal output, press Ctrl+\ then
+Ctrl+N, select lines with `V` and the arrow keys, then press Ctrl+C or `y`.
+Press `i` to resume shell input. Ctrl+C in shell input mode still interrupts
+the command.
 
 ### Telescope: search and open files
 

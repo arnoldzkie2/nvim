@@ -46,6 +46,7 @@ map("x", "<S-Up>", ":move '<-2<CR>gv=gv", { desc = "Move selection up" })
 map("x", "<S-Down>", ":move '>+1<CR>gv=gv", { desc = "Move selection down" })
 
 -- Copy/Delete Visual Mode
+map("x", "<C-c>", "y", { desc = "Copy selection to clipboard" })
 map({"x"}, "c", "y", { desc="Copy In Visual Mode Highlight"})
 map({"x"}, "C", "Y", { desc="Copy In Visual Mode Highlight"})
 map({"x"}, "D", "D", { desc="Delete In Visual Mode Highlight"})
