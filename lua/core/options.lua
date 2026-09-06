@@ -1,5 +1,7 @@
-
 vim.g.mapleader = " "     -- Set leader to space (most common)
+
+-- Render the theme palette accurately in true-color terminals.
+vim.opt.termguicolors = true
 
 -- Basic quality of life settings
 vim.opt.number = true
