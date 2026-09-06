@@ -3,6 +3,52 @@ require("nvim-tree").setup ({
     local api = require("nvim-tree.api")
     api.config.mappings.default_on_attach(bufnr)
 
+    vim.keymap.set("n", "<C-e>", "<cmd>Telescope find_files<CR>", {
+      buffer = bufnr,
+      silent = true,
+      desc = "Find files with Telescope",
+    })
+
+    local function create_file_or_folder()
+      local node = api.tree.get_node_under_cursor()
+      if not node then return end
+      local directory = node.absolute_path
+      if vim.fn.isdirectory(directory) == 0 then
+        directory = vim.fn.fnamemodify(directory, ":h")
+      end
+      vim.ui.input({ prompt = "Create file or folder: ", default = directory .. "/", completion = "file" }, function(path)
+        if not path or path == "" or path == directory .. "/" then return end
+        local name = vim.fn.fnamemodify(path:gsub("/+$", ""), ":t")
+        local is_folder = path:sub(-1) == "/" or not name:match("%..+$")
+        if vim.uv.fs_lstat(path) then
+          vim.notify("Already exists: " .. path, vim.log.levels.WARN)
+          return
+        end
+        local ok, err = pcall(function()
+          if is_folder then
+            vim.fn.mkdir(path, "p")
+          else
+            vim.fn.mkdir(vim.fn.fnamemodify(path, ":h"), "p")
+            local fd, message = vim.uv.fs_open(path, "wx", 420)
+            if not fd then error(message) end
+            vim.uv.fs_close(fd)
+          end
+        end)
+        if not ok then
+          vim.notify("Could not create: " .. tostring(err), vim.log.levels.ERROR)
+          return
+        end
+        api.tree.reload()
+        api.tree.find_file({ buf = path, open = true, focus = true })
+      end)
+    end
+
+    vim.keymap.set("n", "n", create_file_or_folder, {
+      buffer = bufnr,
+      silent = true,
+      desc = "Create file with extension or folder without extension",
+    })
+
     local function open_and_keep_focus()
       api.node.open.no_window_picker()
       api.tree.focus()
@@ -86,7 +132,12 @@ require("nvim-tree").setup ({
     },
   },
   filters = {
-    dotfiles=true
+    enable = true,
+    dotfiles = false,
+    git_ignored = false,
+    custom = function(path)
+      return vim.fn.fnamemodify(path, ":t"):sub(1, 1) == "." and vim.fn.isdirectory(path) == 1
+    end,
   }
 })
 

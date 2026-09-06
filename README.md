@@ -105,6 +105,7 @@ editor, opens a right split in Telescope, and cycles sessions in the terminal.
 | Ctrl+Q | Normal, Insert | **Force-close the current tab**, potentially discarding unsaved changes |
 | Ctrl+E | Normal, Insert | Find files with Telescope; completion cancellation can take priority in Insert mode |
 | Space, then `b` | Normal | Search open buffers with Telescope |
+| Alt+L | Normal, Insert, Visual | Search all text in the current file, including names and values |
 | Ctrl+F | Normal, Insert | Toggle the file tree; completion documentation scrolling can take priority in Insert mode |
 | Ctrl+C | Normal, Insert | Copy the current line to the system clipboard and enter Insert mode |
 | Ctrl+X | Normal, Insert | Cut the current line and enter Insert mode |
@@ -129,9 +130,15 @@ the command.
 
 ### Telescope: search and open files
 
+Telescope file search includes dotfiles but respects `.gitignore`, including in
+folders without a Git repository. `.env`, `.env.*`, and `.envrc` are exceptions
+and remain searchable. It requires `ripgrep` (`rg`), installed by `setup.sh`.
+
 These shortcuts apply inside the picker. Enter always creates a **new tab**, even
 when the selected file is already open elsewhere. Directional splits are placed
 relative to the editing window from which the picker was opened.
+Alt+L is the exception to the new-tab behavior: Enter jumps to the selected
+line in the current file. All text is searchable, including names and values.
 
 | Shortcut | Picker mode | Action |
 | --- | --- | --- |
@@ -143,6 +150,7 @@ relative to the editing window from which the picker was opened.
 | Ctrl+P / Ctrl+N | Insert | Previous / next result |
 | `k` / `j` | Normal | Previous / next result |
 | Ctrl+X / Ctrl+V / Ctrl+T | Insert, Normal | Horizontal split / vertical split / new tab |
+| Ctrl+A | Insert | Select all search text; Backspace clears it |
 | Ctrl+C | Insert | Close picker |
 | Esc | Insert, then Normal | Leave prompt typing mode; press again to close picker |
 | Tab / Shift+Tab | Insert, Normal | Toggle selection and move to the next / previous result |
@@ -214,6 +222,17 @@ either panel window with Ctrl+W also hides the other half and retains the sessio
 
 ### File tree
 
+The tree hides dot folders (such as `.git` and `.venv`), while showing dotfiles
+and other files/folders covered by `.gitignore`. Telescope file search excludes
+ignored paths except for the environment-file exceptions above.
+
+Press `n` in the tree to enter a name: names with an extension (such as `notes.md`
+or `data.json`) create files; names without an extension create folders. The item
+is created inside the selected folder, or beside the selected file. A trailing
+`/` explicitly creates a folder, even if its name contains a dot.
+
+Ctrl+E opens Telescope file search from the tree.
+
 Ctrl+F toggles the tree. Its local mappings below override editor mappings while
 it has focus. `s`, Enter, and double-click show the file and keep focus in the
 tree; `o` opens it and focuses the editor; `i` enters Insert mode in the editing
@@ -229,7 +248,7 @@ window. Folder selections expand/collapse instead of opening a file.
 | `<2-LeftMouse>` | Normal | Open file or toggle folder; stay in tree |
 | `<2-RightMouse>` | Normal | CD |
 | `<BS>` | Normal | Close Directory |
-| `<C-E>` | Normal | Open: In Place |
+| `<C-E>` | Normal | Find files with Telescope |
 | `<C-K>` | Normal | Info |
 | `<C-R>` | Normal | Rename: Omit Filename |
 | `<C-T>` | Normal | Open: New Tab |
@@ -313,6 +332,7 @@ Editor regression checks (temporary buffers and shell sessions; tracking disable
 
 ```bash
 nvim --headless -i NONE --cmd 'let g:loaded_wakatime = 1' '+luafile tests/editor.lua'
+nvim --headless -i NONE --cmd 'let g:loaded_wakatime = 1' '+luafile tests/current_file.lua'
 nvim --headless -i NONE --cmd 'let g:loaded_wakatime = 1' '+luafile tests/telescope_tabs.lua'
 nvim --headless -i NONE --cmd 'let g:loaded_wakatime = 1' '+luafile tests/telescope_splits.lua'
 ```
