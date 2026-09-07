@@ -134,15 +134,16 @@ Telescope file search includes dotfiles but respects `.gitignore`, including in
 folders without a Git repository. `.env`, `.env.*`, and `.envrc` are exceptions
 and remain searchable. It requires `ripgrep` (`rg`), installed by `setup.sh`.
 
-These shortcuts apply inside the picker. Enter always creates a **new tab**, even
-when the selected file is already open elsewhere. Directional splits are placed
-relative to the editing window from which the picker was opened.
+These shortcuts apply inside the picker. Enter switches to an existing tab
+when the selected file is already displayed, or opens a new tab otherwise. Directional splits are placed
+relative to the editing window from which the picker was opened. Enter and the
+directional split shortcuts enter Insert mode in the destination file.
 Alt+L is the exception to the new-tab behavior: Enter jumps to the selected
 line in the current file. All text is searchable, including names and values.
 
 | Shortcut | Picker mode | Action |
 | --- | --- | --- |
-| Enter | Insert, Normal | Open selected file/buffer in a new tab |
+| Enter | Insert, Normal | Switch to existing file tab, or open a new tab |
 | Alt+W / Alt+A / Alt+S / Alt+D | Insert, Normal | Open selection in a split above / left / below / right |
 | Alt+Enter | Insert, Normal | Open selection in a vertical split |
 | Ctrl+Enter | Insert, Normal | Vertical split, only in terminals that send it distinctly from Enter |
@@ -235,8 +236,9 @@ Ctrl+E opens Telescope file search from the tree.
 
 Ctrl+F toggles the tree. Its local mappings below override editor mappings while
 it has focus. `s`, Enter, and double-click show the file and keep focus in the
-tree; `o` opens it and focuses the editor; `i` enters Insert mode in the editing
-window. Folder selections expand/collapse instead of opening a file.
+tree; `o` opens its folder in the system file manager; `i` enters Insert mode in the editing
+window. Folder selections expand/collapse with the file-opening shortcuts; `o` opens
+them in the system file manager.
 
 <details>
 <summary>All active file-tree shortcuts (custom and inherited)</summary>
@@ -302,7 +304,7 @@ window. Folder selections expand/collapse instead of opening a file.
 | `i` | Normal | Return to file and insert |
 | `m` | Normal | Toggle Bookmark |
 | `m` | Visual | Toggle Bookmark |
-| `o` | Normal | Open file and focus editor |
+| `o` | Normal | Open selected folder, or file’s containing folder, in system file manager |
 | `p` | Normal | Paste |
 | `q` | Normal | Close |
 | `r` | Normal | Rename |

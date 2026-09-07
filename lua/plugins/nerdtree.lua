@@ -61,10 +61,19 @@ require("nvim-tree").setup ({
       })
     end
 
-    vim.keymap.set("n", "o", api.node.open.no_window_picker, {
+    vim.keymap.set("n", "o", function()
+      local node = api.tree.get_node_under_cursor()
+      if not node or not node.absolute_path then return end
+      local directory = node.absolute_path
+      if vim.fn.isdirectory(directory) == 0 then
+        directory = vim.fn.fnamemodify(directory, ":h")
+      end
+      local _, err = vim.ui.open(directory)
+      if err then vim.notify(tostring(err), vim.log.levels.ERROR) end
+    end, {
       buffer = bufnr,
       silent = true,
-      desc = "Open file and focus editor",
+      desc = "Open folder in system file manager",
     })
 
     vim.keymap.set("n", "i", function()
@@ -85,7 +94,7 @@ require("nvim-tree").setup ({
     end, { buffer = bufnr, silent = true, desc = "Return to file and insert" })
   end,
   view = {
-    width = 30,
+    width = 40,
     side = "right",
   },
   tab = {
@@ -136,7 +145,8 @@ require("nvim-tree").setup ({
     dotfiles = false,
     git_ignored = false,
     custom = function(path)
-      return vim.fn.fnamemodify(path, ":t"):sub(1, 1) == "." and vim.fn.isdirectory(path) == 1
+      local name = vim.fn.fnamemodify(path, ":t")
+      return (name:sub(1, 1) == "." or name == "__pycache__") and vim.fn.isdirectory(path) == 1
     end,
   }
 })

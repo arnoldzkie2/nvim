@@ -9,9 +9,18 @@ local function select_prompt_text(prompt_bufnr)
   vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(keys, true, false, true), "n", false)
 end
 
-local function open_split(command)
+local function open_file(command)
   return function(prompt_bufnr)
     require("telescope.actions.set").edit(prompt_bufnr, command)
+    local win = vim.api.nvim_get_current_win()
+    local buf = vim.api.nvim_get_current_buf()
+    -- Telescope queues mode changes while closing its prompt. Resume typing afterward.
+    vim.defer_fn(function()
+      if vim.api.nvim_get_current_win() == win and vim.api.nvim_get_current_buf() == buf
+        and vim.bo[buf].buftype == "" and vim.bo[buf].modifiable then
+        vim.cmd("startinsert")
+      end
+    end, 10)
   end
 end
 
@@ -49,30 +58,26 @@ require("telescope").setup({
     mappings = {
       i = {
         ["<C-a>"] = select_prompt_text,
-        ["<A-w>"] = open_split("leftabove new"),
-        ["<A-a>"] = open_split("leftabove vnew"),
-        ["<A-s>"] = open_split("rightbelow new"),
-        ["<A-d>"] = open_split("rightbelow vnew"),
+        ["<A-w>"] = open_file("leftabove new"),
+        ["<A-a>"] = open_file("leftabove vnew"),
+        ["<A-s>"] = open_file("rightbelow new"),
+        ["<A-d>"] = open_file("rightbelow vnew"),
         -- GNOME Terminal sends Ctrl+Enter as Enter; Alt+Enter is distinct.
         ["<M-CR>"] = require("telescope.actions").select_vertical,
         ["<C-CR>"] = require("telescope.actions").select_vertical,
-        -- Press Enter to open file in new tab
-        ["<cr>"] = function(bufnr)
-          require("telescope.actions.set").edit(bufnr, "tabedit")
-        end
+        -- Reuse the tab displaying this file, or open a new tab.
+        ["<cr>"] = open_file("tab drop")
       },
       n = {
-        ["<A-w>"] = open_split("leftabove new"),
-        ["<A-a>"] = open_split("leftabove vnew"),
-        ["<A-s>"] = open_split("rightbelow new"),
-        ["<A-d>"] = open_split("rightbelow vnew"),
+        ["<A-w>"] = open_file("leftabove new"),
+        ["<A-a>"] = open_file("leftabove vnew"),
+        ["<A-s>"] = open_file("rightbelow new"),
+        ["<A-d>"] = open_file("rightbelow vnew"),
         -- GNOME Terminal sends Ctrl+Enter as Enter; Alt+Enter is distinct.
         ["<M-CR>"] = require("telescope.actions").select_vertical,
         ["<C-CR>"] = require("telescope.actions").select_vertical,
         -- Also work in normal mode inside Telescope
-        ["<cr>"] = function(bufnr)
-          require("telescope.actions.set").edit(bufnr, "tabedit")
-        end
+        ["<cr>"] = open_file("tab drop")
       }
     }
   }
