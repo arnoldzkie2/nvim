@@ -363,7 +363,10 @@ Install libraries such as NumPy into that environment. Activating a virtual
 environment inside the embedded terminal does not change Neovim's environment.
 For another interpreter, use `:LspPyrightSetPythonPath /path/to/bin/python` in a
 Python buffer; this updates both Pyright and ty. Restart Neovim after creating a new environment.
-Project Pyright settings can override the default basic type checking.
+Python diagnostics default to open files with optional type checking off, matching
+Pylance defaults. Undefined names, unresolved imports, and syntax errors still
+appear. Project Pyright settings can enable stricter checking. Outdated versioned
+diagnostic reports are ignored; current empty reports clear inline errors.
 
 ### Configuration locations
 

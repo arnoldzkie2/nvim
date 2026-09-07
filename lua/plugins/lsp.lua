@@ -56,6 +56,7 @@ vim.lsp.enable({ "tsc", "ts_ls" })
 -- Use the project's environment even when it was not activated before nvim.
 local pyright_attach = vim.lsp.config.pyright.on_attach
 vim.lsp.config("pyright", {
+  handlers = { ["textDocument/publishDiagnostics"] = require("core.python_diagnostics").publish },
   before_init = function(_, config)
     local python = config.settings.python
     if python.pythonPath then return end
@@ -96,9 +97,9 @@ vim.lsp.config("pyright", {
         autoImportCompletions = true,
         autoSearchPaths = true,
         useLibraryCodeForTypes = true,
-        -- Analyze unopened project files so their symbols can be auto-imported.
-        diagnosticMode = "workspace",
-        typeCheckingMode = "basic",
+        -- Match Pylance defaults; ty indexes unopened files for completion.
+        diagnosticMode = "openFilesOnly",
+        typeCheckingMode = "off",
       },
     },
   },
