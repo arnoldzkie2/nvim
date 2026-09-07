@@ -314,6 +314,34 @@ window. Folder selections expand/collapse instead of opening a file.
 
 </details>
 
+### Python completion and inline errors
+
+ty supplies Python completion and indexed auto-imports; Pyright supplies inline
+errors and the other language features. Both are installed by `setup.sh`.
+For an existing setup, run `:MasonInstall pyright ty`. If system Python lacks
+`ensurepip`, `uv tool install ty==0.0.78` installs ty without that dependency.
+Restart Neovim after installing.
+
+Type a name prefix, select the desired symbol, and accept with Tab or Enter to
+insert both the name and its import. This covers public variables, functions,
+async functions, classes, and constants from unopened project files, nested
+packages, the standard library, and packages installed in the selected Python
+environment. Editable sibling packages are included through that environment.
+Initial indexing may take a few seconds; project exclusions still apply.
+Importable modules must be on Python's search path. This does not search unrelated
+virtual environments or expose function-local variables as module exports.
+Dynamic exports without usable source or type stubs can still be incomplete.
+
+The interpreter is selected from the project root's `.venv`, then `venv`,
+searching parent folders up to and including the repository root for shared
+monorepo environments. It then tries `VIRTUAL_ENV` or `CONDA_PREFIX` inherited
+when Neovim starts, then Python on PATH.
+Install libraries such as NumPy into that environment. Activating a virtual
+environment inside the embedded terminal does not change Neovim's environment.
+For another interpreter, use `:LspPyrightSetPythonPath /path/to/bin/python` in a
+Python buffer; this updates both Pyright and ty. Restart Neovim after creating a new environment.
+Project Pyright settings can override the default basic type checking.
+
 ### Configuration locations
 
 Editor shortcuts live in `lua/core/keymaps.lua`. Terminal shortcuts live in
@@ -333,6 +361,8 @@ Editor regression checks (temporary buffers and shell sessions; tracking disable
 ```bash
 nvim --headless -i NONE --cmd 'let g:loaded_wakatime = 1' '+luafile tests/editor.lua'
 nvim --headless -i NONE --cmd 'let g:loaded_wakatime = 1' '+luafile tests/current_file.lua'
+nvim --headless -i NONE --cmd 'let g:loaded_wakatime = 1' '+luafile tests/python_lsp.lua'
+nvim --headless -i NONE --cmd 'let g:loaded_wakatime = 1' '+luafile tests/python_autoimport.lua'
 nvim --headless -i NONE --cmd 'let g:loaded_wakatime = 1' '+luafile tests/telescope_tabs.lua'
 nvim --headless -i NONE --cmd 'let g:loaded_wakatime = 1' '+luafile tests/telescope_splits.lua'
 ```

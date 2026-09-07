@@ -33,7 +33,7 @@ local ok, err = xpcall(function()
   assert(vim.wait(120000, function() return ready end, 100), 'Mason registry refresh timed out')
   assert(refreshed, 'Mason registry refresh failed')
   local names = { 'prettier', 'stylua', 'ruff', 'shfmt', 'google-java-format',
-    'php-cs-fixer', 'rubyfmt', 'sql-formatter', 'taplo', 'typescript-language-server' }
+    'php-cs-fixer', 'rubyfmt', 'sql-formatter', 'taplo', 'typescript-language-server', 'pyright', 'ty' }
   local remaining, failures = 0, {}
   for _, name in ipairs(names) do
     local pkg = registry.get_package(name)

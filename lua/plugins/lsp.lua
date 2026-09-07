@@ -52,3 +52,86 @@ vim.lsp.config("ts_ls", {
 })
 
 vim.lsp.enable({ "tsc", "ts_ls" })
+
+-- Use the project's environment even when it was not activated before nvim.
+local pyright_attach = vim.lsp.config.pyright.on_attach
+vim.lsp.config("pyright", {
+  before_init = function(_, config)
+    local python = config.settings.python
+    if python.pythonPath then return end
+    python.pythonPath = require("core.python_environment").find(config.root_dir)
+  end,
+  on_attach = function(client, bufnr)
+    if pyright_attach then pyright_attach(client, bufnr) end
+    vim.api.nvim_buf_create_user_command(bufnr, "LspPyrightSetPythonPath", function(command)
+      for _, attached in ipairs(vim.lsp.get_clients({ bufnr = bufnr })) do
+        if attached.name == "pyright" then
+          attached.settings.python.pythonPath = command.args
+          attached:notify("workspace/didChangeConfiguration", { settings = attached.settings })
+        elseif attached.name == "ty" then
+          -- Rebuild ty's module index when switching environments.
+          local config = vim.deepcopy(attached.config)
+          config.settings = vim.deepcopy(attached.settings)
+          config.settings.ty.configuration.environment.python = command.args
+          local buffers = vim.tbl_keys(attached.attached_buffers)
+          for _, buffer in ipairs(buffers) do
+            if vim.api.nvim_buf_is_valid(buffer) then vim.lsp.buf_detach_client(buffer, attached.id) end
+          end
+          attached:stop()
+          local id = vim.lsp.start(config, { bufnr = bufnr, reuse_client = function() return false end })
+          if id then
+            for _, buffer in ipairs(buffers) do
+              if buffer ~= bufnr and vim.api.nvim_buf_is_valid(buffer) then
+                vim.lsp.buf_attach_client(buffer, id)
+              end
+            end
+          end
+        end
+      end
+    end, { nargs = 1, complete = "file", desc = "Select Python for diagnostics and completion" })
+  end,
+  settings = {
+    python = {
+      analysis = {
+        autoImportCompletions = true,
+        autoSearchPaths = true,
+        useLibraryCodeForTypes = true,
+        -- Analyze unopened project files so their symbols can be auto-imported.
+        diagnosticMode = "workspace",
+        typeCheckingMode = "basic",
+      },
+    },
+  },
+})
+vim.lsp.enable("pyright")
+
+-- ty supplies indexed auto-imports for project code and installed packages.
+-- Pyright remains responsible for diagnostics and the other language features.
+vim.lsp.config("ty", {
+  before_init = function(_, config)
+    local settings = config.settings.ty
+    settings.configuration = settings.configuration or {}
+    settings.configuration.environment = settings.configuration.environment or {}
+    settings.configuration.environment.python = settings.configuration.environment.python
+      or vim.lsp.config.pyright.settings.python.pythonPath
+      or require("core.python_environment").find(config.root_dir)
+  end,
+  on_attach = function(client)
+    -- Keep navigation and hover responses from a single server.
+    for _, capability in ipairs({
+      "hoverProvider", "definitionProvider", "declarationProvider", "typeDefinitionProvider",
+      "referencesProvider", "renameProvider", "documentSymbolProvider", "workspaceSymbolProvider",
+      "signatureHelpProvider", "inlayHintProvider", "semanticTokensProvider", "codeActionProvider",
+    }) do
+      client.server_capabilities[capability] = nil
+    end
+  end,
+  settings = {
+    ty = {
+      diagnosticMode = "off",
+      showSyntaxErrors = false,
+      completions = { autoImport = true, completeFunctionParentheses = false },
+    },
+  },
+})
+vim.lsp.enable("ty")
