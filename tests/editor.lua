@@ -19,6 +19,14 @@ local function check()
   assert(vim.api.nvim_get_current_line() == "one  three", "Word deletion failed")
   vim.bo.modified = false
 
+  for _, case in ipairs({ { "<A-e>", { "first", "!first", "last" } }, { "<A-q>", { "!first", "first", "last" } } }) do
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, { "first", "last" })
+    vim.api.nvim_win_set_cursor(0, { 1, 0 })
+    keys(case[1] .. "!<Esc>")
+    assert(vim.deep_equal(vim.api.nvim_buf_get_lines(0, 0, -1, false), case[2]), "First-line duplication failed")
+    vim.bo.modified = false
+  end
+
   vim.cmd("vsplit")
   keys("<C-w>")
   assert(#vim.api.nvim_tabpage_list_wins(0) == 1, "Split close failed")

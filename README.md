@@ -111,13 +111,18 @@ editor, opens a right split in Telescope, and cycles sessions in the terminal.
 | Ctrl+X | Normal, Insert | Cut the current line and enter Insert mode |
 | Ctrl+V | Normal, Insert | Paste from the system clipboard and enter Insert mode |
 | Ctrl+Z | Normal, Insert | Undo and enter Insert mode |
+| Ctrl+Y | Normal, Insert | Redo |
+| Shift+Tab | Normal, Insert, Visual | Unindent line or selection |
 | Ctrl+R | Normal, Insert, Visual | Delete the whole word under the cursor (Visual selection ends first) |
 | Alt+F | Normal, Insert, Visual | Format current file or selected range |
-| Alt+Q / Alt+E | Normal, Insert | Duplicate line above / below |
+| Alt+Q / Alt+E | Normal, Insert | Duplicate line below / above |
 | Alt+J / Alt+K | Normal, Insert | Move line up / down |
 | Shift+Up / Shift+Down | Visual | Move selected lines up / down |
 | `c` / Shift+C | Visual | Yank selection / selected lines |
 | `d` / Shift+D | Visual | Delete selection / selected lines |
+
+Alt+W and Alt+S land at the beginning of the adjacent line when leaving a blank
+line. Ordinary arrow keys retain their usual movement.
 
 Ctrl+W replaces Neovim's usual window-command prefix. To create splits without
 Telescope, use `:vsplit` (side by side) or `:split` (above/below).
@@ -194,14 +199,30 @@ snippet placeholders. Simply browsing suggestions does **not** insert their text
 
 ### Multiple cursors
 
+Use Ctrl+D to select the word, repeat Ctrl+D to select more occurrences, then
+just type to replace every selection. No `c` or `i` is needed. Printable keys
+(including letters such as `c`, `i`, and `a`) insert text while multicursor is
+active. Selections remain unchanged until you type or delete; Esc cancels them.
+Replacing a single selection exits multicursor and continues in regular Insert
+mode; two or more selections keep multicursor active. Normal-mode mappings are
+restored when the session ends. `^` remains a movement command until typing starts
+because the plugin uses it internally when inserting newlines.
+
 | Shortcut | Mode/context | Action |
 | --- | --- | --- |
 | Ctrl+D | Normal, Insert | Select the word; press again to add the next matching occurrence |
 | Ctrl+D | Visual | Add the selected text through vim-visual-multi's subword mapping |
 | Ctrl+L | Normal, Insert | Add the entire current line as an editable region |
+| Ctrl+Shift+L | Normal, Insert, Visual | Select all matching occurrences, if the terminal sends this key distinctly |
+| Alt+Click | Normal, Insert | Add a cursor at the clicked position |
+| Typing | Multiple-cursor selections | Replace selections immediately; insert at empty cursors |
+| Backspace / Delete | Multiple-cursor selections | Delete selections and start typing |
+| Tab | Multiple-cursor Insert mode | Accept completion when visible; otherwise insert a tab |
 | Up / Down | Multiple-cursor Insert mode | Browse completion when visible; otherwise move the cursors |
 | Enter | Multiple-cursor Insert mode | Accept completion when available; otherwise insert a return at the cursors |
-| Esc | Multiple-cursor editing | Leave Insert mode; press again to exit multiple-cursor editing |
+| Esc | Multiple-cursor editing | End multicursor editing with one press |
+| Ctrl+Z | Multiple-cursor editing | Undo; keep multicursor with two or more selections, exit with one |
+| Alt+W / Alt+A / Alt+S / Alt+D | Multiple-cursor editing | Move up / left / down / right and type; exit multicursor only when one selection/cursor remains |
 
 ### Embedded terminal
 
@@ -362,6 +383,7 @@ Editor regression checks (temporary buffers and shell sessions; tracking disable
 
 ```bash
 nvim --headless -i NONE --cmd 'let g:loaded_wakatime = 1' '+luafile tests/editor.lua'
+nvim --headless -i NONE --cmd 'let g:loaded_wakatime = 1' '+luafile tests/multicursor.lua'
 nvim --headless -i NONE --cmd 'let g:loaded_wakatime = 1' '+luafile tests/current_file.lua'
 nvim --headless -i NONE --cmd 'let g:loaded_wakatime = 1' '+luafile tests/python_lsp.lua'
 nvim --headless -i NONE --cmd 'let g:loaded_wakatime = 1' '+luafile tests/python_autoimport.lua'

@@ -5,8 +5,23 @@ map("n", ";", ":", { desc = "CMD enter command mode" })
 map("i", "jk", "<ESC>")
 
 -- Arrow key mappings
-map({"n", "i", "x"}, "<A-w>", "<Up>", { desc = "Move up" })
-map({"n", "i", "x"}, "<A-s>", "<Down>", { desc = "Move down" })
+local function vertical_move(direction, edge, step)
+  return function()
+    local row = vim.api.nvim_win_get_cursor(0)[1]
+    if vim.bo.buftype == "" and not vim.b.visual_multi
+      and vim.api.nvim_get_current_line():match("^%s*$")
+      and row + step >= 1 and row + step <= vim.api.nvim_buf_line_count(0) then
+      return direction .. edge
+    end
+    return direction
+  end
+end
+map({ "n", "i", "x" }, "<A-w>", vertical_move("<Up>", "<Home>", -1), {
+  expr = true, desc = "Move up; line beginning when leaving a blank line",
+})
+map({ "n", "i", "x" }, "<A-s>", vertical_move("<Down>", "<Home>", 1), {
+  expr = true, desc = "Move down; line beginning when leaving a blank line",
+})
 map({"n", "i", "x"}, "<A-a>", "<Left>", { desc = "Move left" })
 map({"n", "i", "x"}, "<A-d>", "<Right>", { desc = "Move right" })
 
@@ -32,14 +47,21 @@ map({"n", "i"}, "<C-x>", "<ESC>ddi", { desc = "Cut" })
 map({"n", "i"}, "<C-v>", "<ESC>pi", { desc = "Paste" })
 map({"n", "i"}, "<C-z>", "<ESC>ui", { desc = "Undo" })
 
+-- Use the built-in redo command even though Ctrl+R is mapped below.
+map("n", "<C-y>", "<C-r>", { desc = "Redo" })
+map("i", "<C-y>", "<C-o><C-r>", { desc = "Redo" })
+
 -- Delete the whole word under the cursor.
 map("n", "<C-r>", "diw", { desc = "Delete word" })
 map("i", "<C-r>", "<C-o>diw", { desc = "Delete word" })
 map("x", "<C-r>", "<Esc>diw", { desc = "Delete word" })
 
 -- Lines Shortcuts
-map({"n", "i"}, "<A-q>", "<ESC>mzyykp`zi", { desc = "Duplicate line above" })
-map({"n", "i"}, "<A-e>", "<ESC>mzyyp`zi", { desc = "Duplicate line below" })
+map("n", "<S-Tab>", "<<", { desc = "Unindent line" })
+map("i", "<S-Tab>", "<C-d>", { desc = "Unindent line" })
+map("x", "<S-Tab>", "<gv", { desc = "Unindent selection" })
+map({"n", "i"}, "<A-q>", "<ESC>mzyyp`zi", { desc = "Duplicate line below" })
+map({"n", "i"}, "<A-e>", "<ESC>mzyyP`zi", { desc = "Duplicate line above" })
 map({"n", "i"}, "<A-j>", "<ESC>:move .-2<CR>i", { desc = "Move line up" })
 map({"n", "i"}, "<A-k>", "<ESC>:move .+1<CR>i", { desc = "Move line down" })
 map("x", "<S-Up>", ":move '<-2<CR>gv=gv", { desc = "Move selection up" })
