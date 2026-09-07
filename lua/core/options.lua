@@ -14,3 +14,9 @@ vim.opt.whichwrap:append("<,>,[,]")
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
+
+-- Dotenv variants use the installed Bash parser and shell syntax highlighting.
+vim.filetype.add({
+  filename = { [".env"] = "sh" },
+  pattern = { ["%.env%..+"] = "sh" },
+})
