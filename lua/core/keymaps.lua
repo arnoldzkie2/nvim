@@ -42,6 +42,9 @@ end
 -- Shortcuts
 
 -- Navigation
+map({ "n", "i" }, "<A-CR>", vim.lsp.buf.definition, {
+  desc = "Go to definition of symbol under cursor",
+})
 map({"n", "i"}, "<C-c>", "<ESC>yyi", { desc = "Copy" })
 map({"n", "i"}, "<C-x>", "<ESC>ddi", { desc = "Cut" })
 map({"n", "i"}, "<C-v>", "<ESC>pi", { desc = "Paste" })

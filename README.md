@@ -171,6 +171,7 @@ editor, opens a right split in Telescope, and cycles sessions in the terminal.
 | Space, then `b` | Normal | Search open buffers with Telescope |
 | Alt+L | Normal, Insert, Visual | Search all text in the current file, including names and values |
 | Ctrl+F | Normal, Insert | Toggle the file tree and reveal the current file; completion documentation scrolling can take priority in Insert mode |
+| Alt+Enter | Normal, Insert | Go to definition of the symbol under the cursor using the language server |
 | Ctrl+C | Normal, Insert | Copy the current line to the system clipboard and enter Insert mode |
 | Ctrl+X | Normal, Insert | Cut the current line and enter Insert mode |
 | Ctrl+V | Normal, Insert | Paste from the system clipboard and enter Insert mode |
@@ -403,6 +404,20 @@ them in the system file manager.
 | `y` | Normal | Copy Name |
 
 </details>
+
+### Go to definition
+
+Place your cursor on a function, variable, or imported symbol and press
+**Alt+Enter** to jump to its definition, including in another file. For example,
+using a function in `useTest.py` can jump to its definition in `test.py`.
+Press **Esc**, then **Ctrl+O** to return to the previous location.
+
+This requires an attached language server that supports definition lookup.
+For Python, install Pyright with `:MasonInstall pyright` and restart Neovim;
+imports must be resolvable in your project's Python environment. Multiple
+matches may open a location list. Inside Telescope, Alt+Enter retains its
+existing vertical-split action. If your terminal intercepts Alt+Enter, disable
+that terminal shortcut or use `:lua vim.lsp.buf.definition()` inside Neovim.
 
 ### Python completion and inline errors
 
