@@ -2,81 +2,36 @@
 
 I got bored, configured Neovim until I forgot what I was supposed to be doing, and made it public. Enjoy my questionable keybindings. HAHAHA
 
-[Installation](#installation) · [Setup options](#installation-options) · [Keybindings](#keybindings)
+[Installation](#installation) · [Keybindings](#keybindings)
 
 ## Installation
 
-Automatic setup supports **Ubuntu 24.04 or newer**, on x86_64 or ARM64.
-Run as your normal user; the script uses `sudo` only for system packages.
-Install Git and Python 3 first, then clone and run setup:
+On Linux or macOS, first install **Neovim 0.11.4+**, Git, make, a C
+compiler (`cc`), tar, and curl using your preferred package manager.
 
 ```bash
-sudo apt update
-sudo apt install -y git python3
+mkdir -p ~/.config
 git clone https://github.com/arnoldzkie2/nvim.git ~/.config/nvim
-cd ~/.config/nvim
-./setup.sh
+nvim
 ```
 
-You can also clone elsewhere and run `./setup.sh` there. It links the checkout to
-`${XDG_CONFIG_HOME:-~/.config}/nvim` if that location is empty. It stops if another
-configuration occupies that location, without replacing it.
+Back up and move aside any existing configuration before cloning. If you use
+`XDG_CONFIG_HOME`, clone into `$XDG_CONFIG_HOME/nvim` instead.
 
-Commit and push the configuration, `lazy-lock.json`, `setup.sh`, and `scripts/`
-before cloning on another computer. Uncommitted files cannot transfer through Git.
+On first launch, Neovim automatically downloads the plugin manager, installs
+plugins, and installs the configured Treesitter parsers. Your settings and
+keybindings load directly from this repo. No setup script is needed.
 
-The script installs:
+Commit and push your changes before cloning on another computer. Keep
+`lazy-lock.json` and run `:Lazy restore` inside Neovim to restore the pinned
+plugin versions. Internet access is required for downloads.
+Wakapi/WakaTime is not included.
 
-- Neovim 0.11.4 and Node.js 24.12.0 under `~/.local/share/nvim-setup`, with verified
-  archive checksums. It adds their paths to `.profile`, `.bashrc`, and `.zshrc`.
-- Plugins restored from `lazy-lock.json`, including the compiled Telescope fzf matcher, completion, snippets,
-  multiple cursors, the terminal panel, the file tree, and activity tracking.
-- Mason tools: Prettier, StyLua, Ruff, shfmt, google-java-format, PHP CS Fixer,
-  rubyfmt, sql-formatter, Taplo, and typescript-language-server.
-- System dependencies including Python venv support, Java 21, PHP, Go/gofmt,
-  Rust/cargo/rustfmt, clang-format, ripgrep, compiler tools, and clipboard support.
-- The configured Treesitter parsers, waiting for installation to finish.
-- Ubuntu Sans Mono for text and Symbols Nerd Font Mono for missing icons.
-  The default GNOME Terminal profile uses **Ubuntu Sans Mono 11**. The desktop's
-  global font setting stays unchanged. Other terminals need this font selected
-  in their own preferences.
-- Wakapi's endpoint and a privately entered API key in `~/.wakatime.cfg` with
-  owner-only permissions. An existing valid Wakapi configuration is retained.
-  The plugin downloads its tracking CLI when you first open Neovim normally.
-
-Restart the terminal after setup to load the tool paths and fonts. For fish or
-other shells, add the paths shown in `~/.local/share/nvim-setup/env.sh` using your
-shell's syntax. Dependencies inside each project still need installation with
-that project's package manager. JS/TS language servers use those project files;
-formatter support for other languages does not automatically add their LSPs.
-
-## Installation options
-
-```bash
-./setup.sh --dry-run           # Show planned actions; no changes or downloads
-./setup.sh --check             # Check executable availability; no changes
-./setup.sh --non-interactive   # Skip asking for a missing Wakapi key (sudo may prompt)
-./setup.sh --wakapi-only       # Add your private key later
-./setup.sh --skip-system       # Already installed all apt dependencies
-./setup.sh --skip-terminal     # Keep your terminal profile preferences
-./setup.sh --skip-fonts        # Keep your existing font setup
-./setup.sh --skip-wakapi       # Leave tracking credentials alone
-```
-
-Rerunning setup reuses installed binary archives and Mason packages, restores
-pinned plugin commits, and avoids duplicate shell initialization lines. Downloads
-or installation failures stop setup; fix the reported problem and rerun. Setup
-requires internet access. `--check` is an availability check, not a full plugin
-health check; use `:checkhealth` inside Neovim for that.
-
-Editor settings and plugin commits are reproducible. Apt and Mason tools use
-available versions on first installation, so their versions can differ between
-computers. Setup does not copy project-specific aliases or project dependencies.
-macOS, Windows, and other Linux distributions need manual installation for now.
-
-Download sources: [Neovim release](https://github.com/neovim/neovim/releases/tag/v0.11.4),
-[Node.js release](https://nodejs.org/dist/v24.12.0/), and
-[Nerd Fonts](https://github.com/ryanoasis/nerd-fonts/tree/v3.4.0).
+External tools are optional and installed separately: `ripgrep` for searching,
+a clipboard provider for system clipboard access, and language servers/formatters
+through `:Mason` (their runtimes, such as Node.js or Python, may also be needed).
+Choose a Nerd Font in your terminal if you want the same icons. Project
+dependencies and aliases are not copied. Run `:checkhealth` to check your machine.
 
 ## Keybindings
 
@@ -128,7 +83,7 @@ Ctrl+W replaces Neovim's usual window-command prefix. To create splits without
 Telescope, use `:vsplit` (side by side) or `:split` (above/below).
 Copy, cut, and paste use the system clipboard (`unnamedplus`), including Visual
 mode `c`, Ctrl+C, and normal yanks. Linux needs a clipboard provider such as
-`xclip` (installed by `setup.sh`). To copy terminal output, press Ctrl+\ then
+`xclip` (install separately on X11). To copy terminal output, press Ctrl+\ then
 Ctrl+N, select lines with `V` and the arrow keys, then press Ctrl+C or `y`.
 Press `i` to resume shell input. Ctrl+C in shell input mode still interrupts
 the command.
@@ -137,7 +92,7 @@ the command.
 
 Telescope file search includes dotfiles but respects `.gitignore`, including in
 folders without a Git repository. `.env`, `.env.*`, and `.envrc` are exceptions
-and remain searchable. It requires `ripgrep` (`rg`), installed by `setup.sh`.
+and remain searchable. It requires `ripgrep` (`rg`), installed separately.
 
 These shortcuts apply inside the picker. Enter switches to an existing tab
 when the selected file is already displayed, or opens a new tab otherwise. Directional splits are placed
@@ -340,7 +295,7 @@ them in the system file manager.
 ### Python completion and inline errors
 
 ty supplies Python completion and indexed auto-imports; Pyright supplies inline
-errors and the other language features. Both are installed by `setup.sh`.
+errors and the other language features. Install both separately through Mason.
 For an existing setup, run `:MasonInstall pyright ty`. If system Python lacks
 `ensurepip`, `uv tool install ty==0.0.78` installs ty without that dependency.
 Restart Neovim after installing.
@@ -373,23 +328,3 @@ diagnostic reports are ignored; current empty reports clear inline errors.
 Editor shortcuts live in `lua/core/keymaps.lua`. Terminal shortcuts live in
 `lua/core/terminal.lua`; Telescope, file tree, formatting, and completion shortcuts
 live with their respective configurations in `lua/plugins/`.
-
-## Verification
-
-```bash
-bash -n setup.sh
-python3 -B -m unittest discover -s scripts -p 'test_*.py'
-./setup.sh --dry-run
-```
-
-Editor regression checks (temporary buffers and shell sessions; tracking disabled):
-
-```bash
-nvim --headless -i NONE --cmd 'let g:loaded_wakatime = 1' '+luafile tests/editor.lua'
-nvim --headless -i NONE --cmd 'let g:loaded_wakatime = 1' '+luafile tests/multicursor.lua'
-nvim --headless -i NONE --cmd 'let g:loaded_wakatime = 1' '+luafile tests/current_file.lua'
-nvim --headless -i NONE --cmd 'let g:loaded_wakatime = 1' '+luafile tests/python_lsp.lua'
-nvim --headless -i NONE --cmd 'let g:loaded_wakatime = 1' '+luafile tests/python_autoimport.lua'
-nvim --headless -i NONE --cmd 'let g:loaded_wakatime = 1' '+luafile tests/telescope_tabs.lua'
-nvim --headless -i NONE --cmd 'let g:loaded_wakatime = 1' '+luafile tests/telescope_splits.lua'
-```

@@ -73,15 +73,6 @@ require("lazy").setup({
     end,
   },
 
-  -- Record editing activity in Wakapi.
-  {
-    "wakatime/vim-wakatime",
-    lazy = false,
-    init = function()
-      require("plugins.wakatime")
-    end,
-  },
-
   -- Telescope
   {
     "nvim-telescope/telescope.nvim",
