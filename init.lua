@@ -1,4 +1,8 @@
--- ~/.config/nvim/init.lua
+-- Resolve modules from this checkout even when loaded via -u or a different
+-- default config directory (for example, a Snap installation).
+local source = debug.getinfo(1, "S").source:sub(2)
+local config_dir = vim.fn.fnamemodify(source, ":p:h")
+vim.opt.runtimepath:prepend(config_dir)
 
 -- Load core settings
 require("core.options")
