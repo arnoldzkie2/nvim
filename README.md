@@ -12,9 +12,13 @@ compiler (`cc`), tar, and curl using your preferred package manager.
 Alternatively, on Linux, run `bash setup.sh` from this checkout to install the
 official Neovim 0.11.4 release under `/opt` with a `/usr/local/bin/nvim` symlink.
 It supports x86_64 and ARM64, uses sudo when needed, and installs build/search
-prerequisites through apt on Debian/Ubuntu. Existing `/opt` installations are
+prerequisites plus `jq` through apt on Debian/Ubuntu. It also registers
+`alias/aliases.json` in the current user's `~/.bashrc`. Open a new Bash terminal
+(or run `source ~/.bashrc`) afterward to activate aliases like `e` for Neovim.
+Run as your normal user; sudo is used only for system installation. Running as
+root registers aliases for root instead. Existing `/opt` installations are
 backed up. Your config, fonts, terminal settings, and any Snap installation are
-left untouched. Afterward run `hash -r` and `/usr/local/bin/nvim`.
+left untouched. Afterward, run `nvim`; plugins install automatically on first launch.
 
 ```bash
 mkdir -p ~/.config
@@ -28,7 +32,7 @@ Back up and move aside any existing configuration before cloning. If you use
 On first launch, Neovim automatically downloads the plugin manager, installs
 plugins, and installs the configured Treesitter parsers. Your settings and
 keybindings load directly from this repo. The optional setup script installs
-Neovim itself; plugin installation is handled inside Neovim.
+Neovim and registers Bash aliases; plugin installation is handled inside Neovim.
 
 Commit and push your changes before cloning on another computer. Keep
 `lazy-lock.json` and run `:Lazy restore` inside Neovim to restore the pinned
@@ -39,7 +43,9 @@ External tools are optional and installed separately: `ripgrep` for searching,
 a clipboard provider for system clipboard access, and language servers/formatters
 through `:Mason` (their runtimes, such as Node.js or Python, may also be needed).
 Choose a Nerd Font in your terminal if you want the same icons. Project
-dependencies and aliases are not copied. Run `:checkhealth` to check your machine.
+dependencies are not copied. Aliases that reference `/home/umm`, Chrome, or VS Code
+need those paths/apps or must be customized for your server. Run `:checkhealth`
+to check your machine.
 
 ## Keybindings
 
