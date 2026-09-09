@@ -6,46 +6,141 @@ I got bored, configured Neovim until I forgot what I was supposed to be doing, a
 
 ## Installation
 
-On Linux or macOS, first install **Neovim 0.11.4+**, Git, make, a C
-compiler (`cc`), tar, and curl using your preferred package manager.
+### 1. Install Git (Ubuntu/Debian)
 
-Alternatively, on Linux, run `bash setup.sh` from this checkout to install the
-official Neovim 0.11.4 release under `/opt` with a `/usr/local/bin/nvim` symlink.
-It supports x86_64 and ARM64, uses sudo when needed, and installs build/search
-prerequisites plus `jq` through apt on Debian/Ubuntu. It also registers
-`alias/aliases.json` in the current user's `~/.bashrc`. Open a new Bash terminal
-(or run `source ~/.bashrc`) afterward to activate aliases like `e` for Neovim.
-Run as your normal user; sudo is used only for system installation. Running as
-root registers aliases for root instead. Existing `/opt` installations are
-backed up. Your config, fonts, terminal settings, and any Snap installation are
-left untouched. Afterward, run `nvim`; plugins install automatically on first launch.
+Run these commands **in your terminal**, as your normal user:
 
 ```bash
-mkdir -p ~/.config
-git clone https://github.com/arnoldzkie2/nvim.git ~/.config/nvim
+sudo apt update
+sudo apt install -y git
+```
+
+If you are already root on a server, omit `sudo`. Your config and aliases will
+belong to the user running setup: `/root` for root, not your other user accounts.
+The installer supports Linux x86_64 and ARM64 and needs internet access.
+
+### 2. Clone the configuration
+
+If you already have a **different** Neovim configuration, back it up first:
+
+```bash
+mv "${XDG_CONFIG_HOME:-$HOME/.config}/nvim" "${XDG_CONFIG_HOME:-$HOME/.config}/nvim.backup-$(date +%s)"
+```
+
+Skip that command if the folder does not exist. Then clone:
+
+```bash
+mkdir -p "${XDG_CONFIG_HOME:-$HOME/.config}"
+git clone https://github.com/facelessuum/nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
+cd "${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
+```
+
+If this repo is already cloned, do not clone again. Instead:
+
+```bash
+cd "${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
+git pull
+```
+
+Commit or stash any local changes before pulling.
+
+### 3. Install Neovim and register aliases
+
+In **Bash**, from the checkout, run:
+
+```bash
+bash setup.sh && source ~/.bashrc
+```
+
+Run setup as your normal user, not `sudo bash setup.sh`; it requests sudo for
+system installation when needed. Running as root is also supported.
+
+Setup installs:
+
+- Official Neovim **0.11.4** under `/opt`, linked as `/usr/local/bin/nvim`.
+- Git, curl, certificates, tar, build tools, ripgrep, and jq through apt on
+  Ubuntu/Debian. On other Linux distributions, install prerequisites yourself.
+- The JSON alias loader in your `~/.bashrc`, including `e` for `nvim`.
+
+Existing `/opt/nvim-linux-*` installations are backed up before replacement.
+Your editor config, fonts, terminal preferences, and any Snap installation stay
+untouched. Wakapi/WakaTime is not included. The `source ~/.bashrc` command
+activates aliases in your current Bash session; alternatively, open a new terminal.
+
+### 4. Open Neovim and wait for plugins
+
+Run **in your terminal**:
+
+```bash
+nvim --version
 nvim
 ```
 
-Back up and move aside any existing configuration before cloning. If you use
-`XDG_CONFIG_HOME`, clone into `$XDG_CONFIG_HOME/nvim` instead.
+The version should be **0.11.4 or newer**. On first launch, your config downloads
+the plugin manager, installs plugins, and installs Treesitter parsers. Wait for
+installation to finish. The Lazy installation window stays open so you can
+review results—press **`q`** to close it when finished. Restart Neovim if prompted.
+Your settings and keybindings load directly from this repo.
 
-On first launch, Neovim automatically downloads the plugin manager, installs
-plugins, and installs the configured Treesitter parsers. Your settings and
-keybindings load directly from this repo. The optional setup script installs
-Neovim and registers Bash aliases; plugin installation is handled inside Neovim.
+If `nvim` still launches an old version or reports a missing executable:
 
-Commit and push your changes before cloning on another computer. Keep
-`lazy-lock.json` and run `:Lazy restore` inside Neovim to restore the pinned
-plugin versions. Internet access is required for downloads.
-Wakapi/WakaTime is not included.
+```bash
+hash -r
+/usr/local/bin/nvim
+```
 
-External tools are optional and installed separately: `ripgrep` for searching,
-a clipboard provider for system clipboard access, and language servers/formatters
-through `:Mason` (their runtimes, such as Node.js or Python, may also be needed).
-Choose a Nerd Font in your terminal if you want the same icons. Project
-dependencies are not copied. Aliases that reference `/home/umm`, Chrome, or VS Code
-need those paths/apps or must be customized for your server. Run `:checkhealth`
-to check your machine.
+Ensure `/usr/local/bin` comes before `/snap/bin` or an older Neovim directory in
+`PATH` if you want plain `nvim` to use this installation.
+
+### 5. Optional editor tools and checks
+
+The following are **Neovim commands, not terminal commands**. Open Neovim,
+press **Esc**, type a command including its leading `:`, then press **Enter**:
+
+```vim
+:checkhealth
+```
+
+To install language servers or formatters, open Mason:
+
+```vim
+:Mason
+```
+
+For the Python completion and diagnostics configured here:
+
+```vim
+:MasonInstall pyright ty
+```
+
+External tools may require runtimes such as Node.js or Python. Install project
+dependencies separately. System clipboard support needs a clipboard provider
+(such as `xclip` on X11). Choose a Nerd Font in your terminal for plugin icons.
+Aliases referencing `/home/umm`, Chrome, or VS Code must be customized for a
+server without those paths/apps; edit `alias/aliases.json` and reload `~/.bashrc`.
+
+### Copying settings to another machine
+
+Commit and push your changes on the original machine, then follow steps 1–4 on
+the new machine. Keep `lazy-lock.json` in Git. To explicitly restore its exact
+plugin versions, run **inside Neovim**:
+
+```vim
+:Lazy restore
+```
+
+This is optional for normal startup; plugins already install automatically.
+
+### Already have Neovim / using macOS?
+
+You can skip `setup.sh` if Neovim **0.11.4+**, Git, make, a C compiler (`cc`),
+tar, and curl are already installed. On macOS, install these with your preferred
+package manager; the script is Linux-only. Follow step 2, then run `nvim`.
+For Bash aliases without reinstalling Neovim, install `jq` separately and run:
+
+```bash
+bash alias/setup_alias_loader.sh && source ~/.bashrc
+```
 
 ## Keybindings
 
