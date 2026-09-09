@@ -170,7 +170,7 @@ editor, opens a right split in Telescope, and cycles sessions in the terminal.
 | Ctrl+E | Normal, Insert | Find files with Telescope; completion cancellation can take priority in Insert mode |
 | Space, then `b` | Normal | Search open buffers with Telescope |
 | Alt+L | Normal, Insert, Visual | Search all text in the current file, including names and values |
-| Ctrl+F | Normal, Insert | Toggle the file tree; completion documentation scrolling can take priority in Insert mode |
+| Ctrl+F | Normal, Insert | Toggle the file tree and reveal the current file; completion documentation scrolling can take priority in Insert mode |
 | Ctrl+C | Normal, Insert | Copy the current line to the system clipboard and enter Insert mode |
 | Ctrl+X | Normal, Insert | Cut the current line and enter Insert mode |
 | Ctrl+V | Normal, Insert | Paste from the system clipboard and enter Insert mode |
@@ -319,7 +319,10 @@ is created inside the selected folder, or beside the selected file. A trailing
 
 Ctrl+E opens Telescope file search from the tree.
 
-Ctrl+F toggles the tree. Its local mappings below override editor mappings while
+Ctrl+F toggles the tree. When opening it, parent folders expand and the cursor
+focuses the current file, including files opened through Telescope. The tree root
+updates if needed to reveal a file outside it. Existing filters still apply.
+Its local mappings below override editor mappings while
 it has focus. `s`, Enter, and double-click show the file and keep focus in the
 tree; `o` opens its folder in the system file manager; `i` enters Insert mode in the editing
 window. Folder selections expand/collapse with the file-opening shortcuts; `o` opens

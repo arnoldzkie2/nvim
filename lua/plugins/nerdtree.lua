@@ -151,6 +151,6 @@ require("nvim-tree").setup ({
   }
 })
 
-vim.keymap.set({ "n", "i" }, "<C-f>", "<Esc><cmd>NvimTreeToggle<CR>", {
-  desc = "Toggle file tree",
+vim.keymap.set({ "n", "i" }, "<C-f>", "<Esc><cmd>NvimTreeFindFileToggle!<CR>", {
+  desc = "Toggle file tree and reveal current file",
 })
