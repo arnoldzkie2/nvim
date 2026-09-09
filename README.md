@@ -9,6 +9,13 @@ I got bored, configured Neovim until I forgot what I was supposed to be doing, a
 On Linux or macOS, first install **Neovim 0.11.4+**, Git, make, a C
 compiler (`cc`), tar, and curl using your preferred package manager.
 
+Alternatively, on Linux, run `bash setup.sh` from this checkout to install the
+official Neovim 0.11.4 release under `/opt` with a `/usr/local/bin/nvim` symlink.
+It supports x86_64 and ARM64, uses sudo when needed, and installs build/search
+prerequisites through apt on Debian/Ubuntu. Existing `/opt` installations are
+backed up. Your config, fonts, terminal settings, and any Snap installation are
+left untouched. Afterward run `hash -r` and `/usr/local/bin/nvim`.
+
 ```bash
 mkdir -p ~/.config
 git clone https://github.com/arnoldzkie2/nvim.git ~/.config/nvim
@@ -20,7 +27,8 @@ Back up and move aside any existing configuration before cloning. If you use
 
 On first launch, Neovim automatically downloads the plugin manager, installs
 plugins, and installs the configured Treesitter parsers. Your settings and
-keybindings load directly from this repo. No setup script is needed.
+keybindings load directly from this repo. The optional setup script installs
+Neovim itself; plugin installation is handled inside Neovim.
 
 Commit and push your changes before cloning on another computer. Keep
 `lazy-lock.json` and run `:Lazy restore` inside Neovim to restore the pinned
