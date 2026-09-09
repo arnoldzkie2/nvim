@@ -119,14 +119,7 @@ require("lazy").setup({
   end,
   },
 
-
-
-
-
-
-
-
-
-
-
+}, {
+  -- Keep the checkout added by init.lua when stdpath('config') points elsewhere.
+  performance = { rtp = { reset = false } },
 })
